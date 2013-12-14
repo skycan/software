@@ -59,24 +59,24 @@ write_reg(uint8_t reg, uint8_t val) {
   while (i2c_busy());
 }
 
-uint8_t
+uint16_t
 read_reg(uint8_t reg) {
-  uint8_t retval = 0;
-  uint8_t rtx = reg;
+  uint8_t rxbuf[2];
+  uint8_t tx = reg;
 
   /* transmit the register to read */
   i2c_transmitinit(I2C_ADDR);
   while (i2c_busy());
-  i2c_transmit_n(1, &rtx);
+  i2c_transmit_n(1, &tx);
   while (i2c_busy());
 
   /* receive the data */
   i2c_receiveinit(I2C_ADDR);
   while (i2c_busy());
-  i2c_receive_n(1, &retval);
+  i2c_receive_n(2, (uint8_t*)&rxbuf);
   while (i2c_busy());
 
-  return retval;
+  return (rxbuf[0] << 8) | (rxbuf[1] & 0xFF);
 }
 
 PROCESS_THREAD(blink_process, ev, data)
@@ -85,13 +85,14 @@ PROCESS_THREAD(blink_process, ev, data)
   PROCESS_BEGIN();
 
   static struct etimer et;
+  i2c_enable();
 
   while(1) {
     etimer_set(&et, CLOCK_SECOND);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
     
     leds_on(LEDS_ALL);
-    read_reg(0x14);
+    read_reg(0x06);
     leds_off(LEDS_ALL);
   }
 
