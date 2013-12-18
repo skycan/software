@@ -60,7 +60,9 @@ PROCESS_THREAD(sensor_test_process, ev, data)
 
   while(1) {
     leds_on(LEDS_ALL);
-    printf("temp: %i", gauge_sensor.value(GAUGE_TEMPERATURE));
+    printf("temp: %i C\n", gauge_sensor.value(GAUGE_TEMPERATURE));
+    printf("batt: %d mV\n", gauge_sensor.value(GAUGE_BATTERY_VOLTAGE));
+    printf("curr: %d mA\n", gauge_sensor.value(GAUGE_CURRENT));
     leds_off(LEDS_ALL);
 
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
