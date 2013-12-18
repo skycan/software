@@ -40,6 +40,7 @@
 #include "contiki.h"
 #include "dev/leds.h"
 #include "dev/i2c.h"
+#include <stdio.h>
 
 #define I2C_ADDR 0x55
 
@@ -90,9 +91,9 @@ PROCESS_THREAD(blink_process, ev, data)
   while(1) {
     etimer_set(&et, CLOCK_SECOND);
     PROCESS_WAIT_EVENT_UNTIL(etimer_expired(&et));
-    
+
     leds_on(LEDS_ALL);
-    read_reg(0x06);
+    printf("reg: %04X\n", read_reg(0x06));
     leds_off(LEDS_ALL);
   }
 
